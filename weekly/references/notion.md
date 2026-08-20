@@ -11,7 +11,7 @@ Home page "Work": https://app.notion.com/p/3c161f26a848818b8963c671f4c772b9
 
 ## Portfolio properties
 
-Title is `Name` — the row's own name, nothing else. Writable by this ritual: `Next`,
+Title is `Track` — the row's own name (renamed by Alvaro 2026-08-20). Writable by this ritual: `Next`,
 `Blocked on`, `Status`, `Updated`.
 
 Leave alone: `Role`, `Goal`, `Repo`, `Branch`, `Local path`, `Stakeholder`, `Impact`, and
@@ -113,7 +113,7 @@ self-relation:
 - `Project` set → the row is a **track** inside that project
 - `Tracks` empty → the row is a **leaf**: either a track, or a project with no tracks
 
-Three columns carry the hierarchy: `Name` (own name), `Project` (relation to parent),
+Three columns carry the hierarchy: `Track` (own name), `Project` (relation to parent),
 `Tracks` (relation to children). `Project` and `Tracks` are the two ends of one
 self-relation — renaming or ALTERing either recreates the pair and spawns duplicates, so
 touch them only with `RENAME COLUMN`.
@@ -124,10 +124,17 @@ have none.
 
 ### Which row gets the write
 
-**Write to the leaf, never to the parent.** A bold track heading in the weekly maps to its
-track row; its `Next:` and `Esperando:` lines fill that row's fields. A project that has
-tracks should not get its own `Next` — it would compete with its children's and nothing
-would know which is current.
+**A track's `Next:` writes to the track row, never to its parent.** A bold track heading in
+the weekly maps to its track row; its `Next:` and `Esperando:` lines fill that row's fields.
+
+**A project may also hold its own `Next`** (relaxed 2026-08-20) — for work that spans its
+tracks or sits outside all of them. This is not an edge case: the O1 and O2 headline
+deliverables live there. `buyer-panel`'s "quantify what the re-platform saved" belongs to no
+track, and neither does `price-perception`'s category-mix decomposition.
+
+Consequence to watch: a project `Next` can go stale while its tracks move, because the
+weekly's track-level updates will not touch it. When a project `Next` has not changed in
+several runs while its tracks have, raise it in the 🔒 section.
 
 Track names are bare (`dashboard`, `comparacion-yipit-mlb`) — the `Project` column supplies
 the context that a `pp /` prefix used to. One trade-off: relation pickers in other databases

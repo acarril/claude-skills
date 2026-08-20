@@ -19,6 +19,7 @@ Versioned with git; plugin-ready later by adding `.claude-plugin/plugin.json` if
 | [meet-notes](meet-notes/SKILL.md) | model | Distill Google Meet / Gemini notes into a project knowledge doc | own |
 | [title-refresh](title-refresh/SKILL.md) | user (`/title-refresh`) | Refresh a stale session title | own |
 | [grill-me](grill-me/SKILL.md) | user (`/grill-me`) | Entry point: calls `grilling` | mattpocock/skills@0ab1b63, verbatim |
+| [diagnosing-bugs](diagnosing-bugs/SKILL.md) | model | Phase-gated diagnosis for hard bugs and wrong numbers: red-capable feedback loop before any hypothesis | mattpocock/skills@0ab1b63, rewritten (data/pipeline loop menu, SQL regression checks) |
 | [domain-modeling](domain-modeling/SKILL.md) | model | Sharpen project terminology into a CONTEXT.md glossary; record hard-to-reverse choices as ADRs | mattpocock/skills@0ab1b63, adapted (causal-inference framing, single-context only) |
 | [grill-with-docs](grill-with-docs/SKILL.md) | user (`/grill-with-docs`) | Entry point: `grilling` + `domain-modeling` (grill with a paper trail) | mattpocock/skills@0ab1b63, verbatim |
 | [grilling](grilling/SKILL.md) | model | Relentless interview over a design tree of decisions, rounds via AskUserQuestion | mattpocock/skills@0ab1b63, adapted |
