@@ -25,3 +25,5 @@ Versioned with git; plugin-ready later by adding `.claude-plugin/plugin.json` if
 | [grilling](grilling/SKILL.md) | model | Relentless interview over a design tree of decisions, rounds via AskUserQuestion | mattpocock/skills@0ab1b63, adapted |
 | [to-questionnaire](to-questionnaire/SKILL.md) | user (`/to-questionnaire`) | Turn a decision you can't answer alone into a questionnaire for the person who can | mattpocock/skills@0ab1b63, adapted (recipient-language rule added) |
 | [writing-for-agents](writing-for-agents/SKILL.md) | model | Reference for writing skills, CLAUDE.md, and any doc an agent consumes | mattpocock/skills@0ab1b63, verbatim |
+| [resolving-merge-conflicts](resolving-merge-conflicts/SKILL.md) | model | Work an in-progress merge/rebase conflict hunk by hunk, resolving by intent; never abort | mattpocock/skills@0ab1b63, verbatim |
+| [wait-what](wait-what/SKILL.md) | user (`/wait-what`) | Re-pitch the last message in plain English using the repo's CONTEXT.md vocabulary | mattpocock/skills@0ab1b63, adapted (multi-context ref dropped) |
