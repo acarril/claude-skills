@@ -1,6 +1,7 @@
 ---
 name: title-refresh
-description: Use when the current Claude Code session's title is stale or was auto-generated early and no longer reflects the conversation, and you want to refresh/rename/update it to match what's actually been discussed. Triggered by /title-refresh.
+description: Refresh a stale or early-auto-generated session title to match the conversation.
+disable-model-invocation: true
 ---
 
 # title-refresh

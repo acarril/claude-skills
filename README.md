@@ -15,9 +15,9 @@ Versioned with git; plugin-ready later by adding `.claude-plugin/plugin.json` if
 
 | Skill | Invocation | What it does | Provenance |
 |---|---|---|---|
-| [handoff](handoff/SKILL.md) | model | Compact the conversation into a handoff doc for the next session | own |
+| [handoff](handoff/SKILL.md) | user (`/handoff`) | Compact the conversation into a handoff doc for the next session | own |
 | [meet-notes](meet-notes/SKILL.md) | model | Distill Google Meet / Gemini notes into a project knowledge doc | own |
-| [title-refresh](title-refresh/SKILL.md) | model | Refresh a stale session title | own |
+| [title-refresh](title-refresh/SKILL.md) | user (`/title-refresh`) | Refresh a stale session title | own |
 | [grill-me](grill-me/SKILL.md) | user (`/grill-me`) | Entry point: calls `grilling` | mattpocock/skills@0ab1b63, verbatim |
 | [grilling](grilling/SKILL.md) | model | Relentless interview over a design tree of decisions, rounds via AskUserQuestion | mattpocock/skills@0ab1b63, adapted |
 | [to-questionnaire](to-questionnaire/SKILL.md) | user (`/to-questionnaire`) | Turn a decision you can't answer alone into a questionnaire for the person who can | mattpocock/skills@0ab1b63, adapted (recipient-language rule added) |
