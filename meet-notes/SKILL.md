@@ -1,6 +1,12 @@
 ---
 name: meet-notes
-description: Fetch and distill Google Meet / Gemini meeting notes into a structured knowledge document for the current project. Use whenever the user asks to get, fetch, distill, or save notes from a meeting — even without saying "Meet" or "transcript". Trigger on: "get notes from today's meeting", "distill the meeting", "save notes from [meeting]", "what did we discuss in [meeting]", "write up the meeting", "capture notes from yesterday's call".
+description: >-
+  Fetch and distill Google Meet / Gemini meeting notes into a structured knowledge
+  document for the current project. Use whenever the user asks to get, fetch, distill,
+  or save notes from a meeting — even without saying "Meet" or "transcript". Trigger on:
+  "get notes from today's meeting", "distill the meeting", "save notes from [meeting]",
+  "what did we discuss in [meeting]", "write up the meeting", "capture notes from
+  yesterday's call".
 ---
 
 # Meet Notes
