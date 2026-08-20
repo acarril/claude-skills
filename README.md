@@ -18,3 +18,6 @@ Versioned with git; plugin-ready later by adding `.claude-plugin/plugin.json` if
 | [handoff](handoff/SKILL.md) | model | Compact the conversation into a handoff doc for the next session | own |
 | [meet-notes](meet-notes/SKILL.md) | model | Distill Google Meet / Gemini notes into a project knowledge doc | own |
 | [title-refresh](title-refresh/SKILL.md) | model | Refresh a stale session title | own |
+| [grilling](grilling/SKILL.md) | model | Relentless interview over a design tree of decisions, rounds via AskUserQuestion | mattpocock/skills@0ab1b63, adapted |
+| [to-questionnaire](to-questionnaire/SKILL.md) | user (`/to-questionnaire`) | Turn a decision you can't answer alone into a questionnaire for the person who can | mattpocock/skills@0ab1b63, adapted (recipient-language rule added) |
+| [writing-for-agents](writing-for-agents/SKILL.md) | model | Reference for writing skills, CLAUDE.md, and any doc an agent consumes | mattpocock/skills@0ab1b63, verbatim |
