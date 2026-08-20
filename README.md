@@ -19,6 +19,7 @@ Versioned with git; plugin-ready later by adding `.claude-plugin/plugin.json` if
 | [meet-notes](meet-notes/SKILL.md) | model | Distill Google Meet / Gemini notes into a project knowledge doc | own |
 | [title-refresh](title-refresh/SKILL.md) | user (`/title-refresh`) | Refresh a stale session title | own |
 | [grill-me](grill-me/SKILL.md) | user (`/grill-me`) | Entry point: calls `grilling` | mattpocock/skills@0ab1b63, verbatim |
+| [domain-modeling](domain-modeling/SKILL.md) | model | Sharpen project terminology into a CONTEXT.md glossary; record hard-to-reverse choices as ADRs | mattpocock/skills@0ab1b63, adapted (causal-inference framing, single-context only) |
 | [grilling](grilling/SKILL.md) | model | Relentless interview over a design tree of decisions, rounds via AskUserQuestion | mattpocock/skills@0ab1b63, adapted |
 | [to-questionnaire](to-questionnaire/SKILL.md) | user (`/to-questionnaire`) | Turn a decision you can't answer alone into a questionnaire for the person who can | mattpocock/skills@0ab1b63, adapted (recipient-language rule added) |
 | [writing-for-agents](writing-for-agents/SKILL.md) | model | Reference for writing skills, CLAUDE.md, and any doc an agent consumes | mattpocock/skills@0ab1b63, verbatim |
