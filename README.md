@@ -26,5 +26,7 @@ Versioned with git; plugin-ready later by adding `.claude-plugin/plugin.json` if
 | [to-questionnaire](to-questionnaire/SKILL.md) | user (`/to-questionnaire`) | Turn a decision you can't answer alone into a questionnaire for the person who can | mattpocock/skills@0ab1b63, adapted (recipient-language rule added) |
 | [writing-for-agents](writing-for-agents/SKILL.md) | model | Reference for writing skills, CLAUDE.md, and any doc an agent consumes | mattpocock/skills@0ab1b63, verbatim |
 | [resolving-merge-conflicts](resolving-merge-conflicts/SKILL.md) | model | Work an in-progress merge/rebase conflict hunk by hunk, resolving by intent; never abort | mattpocock/skills@0ab1b63, verbatim |
-| [wait-what](wait-what/SKILL.md) | user (`/wait-what`) | Re-pitch the last message in plain English using the repo's CONTEXT.md vocabulary | mattpocock/skills@0ab1b63, adapted (multi-context ref dropped) |
+| [bro](bro/SKILL.md) | user (`/bro`) | Re-pitch the last message in plain English using the repo's CONTEXT.md vocabulary | mattpocock/skills@0ab1b63, adapted; renamed after pstack's `bro` |
 | [wrap-up](wrap-up/SKILL.md) | user (`/wrap-up`) | End-of-session ritual: arc summary, then commits/docs/cleanup/handoff via one checklist | own (designed 2026-08-20 via grilling) |
+| [unslop](unslop/SKILL.md) | model | Cut AI tells from written deliverables (pattern catalog + plain-speech rules) | cursor/plugins@51a96e0 (pstack), adapted (scoped to deliverables, Spanish note) |
+| [blast-radius](blast-radius/SKILL.md) | user (`/blast-radius`) | Prove the one fact a change is safe because of, via real queries; lineage-aware risk sweep | cursor/plugins@51a96e0 (pstack), rewritten for data/pipeline lineage |

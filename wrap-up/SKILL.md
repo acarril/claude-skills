@@ -33,6 +33,7 @@ A single AskUserQuestion call (multi-select) listing only the items that apply:
 - **Docs**: the pending `CONTEXT.md`/ADR entries and `CLAUDE.md`/gotchas learnings, each named with a one-line gist of what would be written.
 - **Cleanup**: the scratch files proposed for deletion, listed by path.
 - **Handoff**: only when work clearly continues; on approval, call the Skill tool with "handoff".
+- **Learnings**: when the session taught a durable lesson about how to work (a dead end, a correction from the user, a recipe worth keeping), name the specific edit to the skill, CLAUDE.md, or gotchas file that would encode it; approving the item applies that edit. One-offs are not learnings.
 
 Nothing on this list executes without being selected. If no item applies, say so after the summary and stop.
 
