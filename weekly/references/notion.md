@@ -14,8 +14,11 @@ Home page "Work": https://app.notion.com/p/3c161f26a848818b8963c671f4c772b9
 Title is `Track` — the row's own name (renamed by Alvaro 2026-08-20). Writable by this ritual: `Next`,
 `Blocked on`, `Status`, `Updated`.
 
-Leave alone: `Role`, `Goal`, `Repo`, `Branch`, `Local path`, `Stakeholder`, `Impact`, and
-the `Objective` / `People` / `Impact claims` relations. Those change on human decisions, not
+Leave alone: `Role`, `Goal`, `Repo`, `Branch`, `Local path`, `Stakeholder`, `Prod`, `Infra`,
+and the `Objective` / `People` / `Impact claims` relations.
+
+There is no `Impact` text field — dropped 2026-08-20. Measured results go to the Impact
+ledger, never onto a Portfolio row. Those change on human decisions, not
 on a week of commits.
 
 `Infra` (multi-select: `fda`, `dataflow`, `grid`, `qualtrics`) says **what a row is built
