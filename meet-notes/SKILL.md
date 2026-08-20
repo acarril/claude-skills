@@ -1,21 +1,17 @@
 ---
 name: meet-notes
 description: >-
-  Fetch and distill Google Meet / Gemini meeting notes into a structured knowledge
-  document for the current project. Use whenever the user asks to get, fetch, distill,
-  or save notes from a meeting — even without saying "Meet" or "transcript". Trigger on:
-  "get notes from today's meeting", "distill the meeting", "save notes from [meeting]",
-  "what did we discuss in [meeting]", "write up the meeting", "capture notes from
-  yesterday's call".
+  Distill Google Meet / Gemini meeting notes into a structured knowledge document in
+  the current project. Use when the user asks to get, distill, or save notes from a
+  meeting, or asks what was discussed in one — even without saying "Meet" or
+  "transcript".
 ---
 
 # Meet Notes
 
 Distill a Google Meet transcript into a structured knowledge document and save it to the current project.
 
-## Why this workflow
-
-Gemini auto-generates a summary of the meeting, but it loses the epistemic layer: who said what, with what confidence, and whether others agreed. This skill reads the raw transcript and produces a document that preserves that signal — useful as a knowledge source for future agents working in the same project directory.
+Gemini's own summary loses the epistemic layer — who said what, with what confidence, and whether others agreed — so this skill distills the raw transcript instead.
 
 ## Step 1 — Resolve the target date
 
@@ -46,19 +42,17 @@ The subagent should run **two queries in parallel** — a combined `or` query wi
 1. `title contains 'Notes by Gemini'`
 2. `title contains 'Notas de Gemini'`
 
-It should merge the results, find the doc whose title starts with the meeting title, and — if multiple candidates exist (recurring meeting) — prefer the one whose embedded date matches the target date.
+It should merge the results and collect **every** doc whose title starts with the meeting title. A single meeting often produces several Gemini docs — an English "Notes by Gemini", a language variant, a standalone **Transcript** doc — and the first one found frequently has an **empty** transcript tab while the real transcript lives in a doc it links to. For a recurring meeting, order candidates so the one whose embedded date matches the target date comes first.
 
 > `sharedWithMeTime` is NOT a valid Drive API query field — do not use it.
 
-The subagent returns: `{file_id, title}` or a not-found signal.
-
-> **Note on multi-doc meetings.** A single meeting often produces *several* Gemini docs: an English "Notes by Gemini", a "Notes by Gemini (Spanish)", plus a standalone **Transcript** doc. The doc found by title is frequently the one whose transcript tab is **empty** (e.g. it says the summary couldn't be produced "because there wasn't enough conversation in a supported language"), while the actual transcript lives in one of the *other* docs it links to. So: return **all** candidate file IDs whose title starts with the meeting title (not just the first), and Step 5 will follow their internal links if needed.
+The subagent returns: a list of candidates `[{file_id, title}, ...]`, date-matched first, or a not-found signal. Step 5 reads them in order and follows their internal links if needed.
 
 **If no doc is found:** tell the user and stop. Transcription is opt-in per meeting and notes may take a few minutes to appear after the call ends.
 
 ## Step 4 — Check for an existing output file
 
-Output path: `{$PWD}/notes/YYYY-MM-DD_<meeting-title-slug>.md`
+Output path: `notes/YYYY-MM-DD_<meeting-title-slug>.md` under the project root
 
 - Slug: lowercase meeting title, spaces replaced with hyphens, special characters stripped
 - Example: `notes/2026-05-12_elasticidad-en-pricing-seller-optimizacion.md`
@@ -72,21 +66,19 @@ If the `notes/` directory doesn't exist: create it and tell the user.
 Spawn a subagent for everything involving the transcript — reading, checking, distilling, and writing. The main agent never touches the transcript text.
 
 Give the subagent:
-- The file ID (from Step 3)
+- The candidate list (from Step 3)
 - The output file path (from Step 4)
 - The attendee list (names + emails from the calendar event)
 - The meeting title and date
 
 The subagent should:
 
-1. **Read the doc** using `mcp__claude_ai_Google_Drive__read_file_content`. The document has two sections: a Gemini-generated summary ("Resumen" / "Summary") — ignore this — and a verbatim transcript with speaker labels and timestamps — use only this.
+1. **Read the candidates in order** using `mcp__claude_ai_Google_Drive__read_file_content`, starting with the first. The document has two sections: a Gemini-generated summary ("Resumen" / "Summary") — ignore this — and a verbatim transcript with speaker labels and timestamps — use only this.
 
-   - **If the transcript is empty or only filler** (greetings, "Transcription ended after 00:0X", or a summary saying it couldn't be produced): do NOT give up. The doc has a **"Meeting records"** section linking to a standalone **Transcript** doc and/or language-variant **"Notes by Gemini (…)"** docs. Extract those links, resolve each to a Drive file ID (the ID is the `/document/d/<ID>/` segment of the URL), and read them until you find one with a real transcript. Try any other candidate file IDs the main agent passed you, too. Only conclude there's no transcript after exhausting all of them.
+   - **If the transcript is empty or only filler** (greetings, "Transcription ended after 00:0X", or a summary saying it couldn't be produced): do NOT give up. The doc has a **"Meeting records"** section linking to a standalone **Transcript** doc and/or language-variant **"Notes by Gemini (…)"** docs. Extract those links, resolve each to a Drive file ID (the ID is the `/document/d/<ID>/` segment of the URL), and read them — plus the remaining candidates from the list — until you find one with a real transcript. Only after exhausting all of them, return a not-found signal to the main agent, which warns the user that the doc exists but has no transcript (transcription may have been disabled) and stops.
    - **If a doc is too large** to return in one call (`read_file_content` errors and saves the content to a local file): read that saved file in sequential chunks until you have 100% of the transcript before distilling.
 
-2. **If no transcript section exists in any candidate doc**: return a not-found signal to the main agent, which will warn the user that the doc exists but has no transcript (transcription may have been disabled for this meeting) and stop.
-
-3. **Distill** the transcript into the output file. What to capture:
+2. **Distill** the transcript into the output file. What to capture:
    - Deduplicate within the conversation: if something is mentioned three times, write it once
    - Preserve epistemic metadata: who said it, how confidently, and what the room's reaction was
    - Distinguish facts from hypotheses from open questions
@@ -95,9 +87,9 @@ The subagent should:
    - Ignore: scheduling logistics, technical difficulties, filler
    - **Correct known mistranscriptions** of team vocabulary (see glossary below) before writing
 
-4. **Write the file** at the output path using the structure in Step 6.
+3. **Write the file** at the output path using the structure in Step 6.
 
-5. **Return** to the main agent: the file path written and a 2-3 sentence summary of the main decisions/outcomes.
+4. **Return** to the main agent: the file path written and a 2-3 sentence summary of the main decisions/outcomes.
 
 ### Mistranscription glossary
 
