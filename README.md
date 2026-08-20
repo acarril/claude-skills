@@ -1,4 +1,4 @@
-# Personal Claude Code skills
+# my claude-code skills
 
 Flat layout: `~/.claude/skills/<name>/SKILL.md` (Claude Code discovers one level deep).
 Versioned with git; plugin-ready later by adding `.claude-plugin/plugin.json` if ever needed.
