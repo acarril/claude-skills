@@ -27,3 +27,4 @@ Versioned with git; plugin-ready later by adding `.claude-plugin/plugin.json` if
 | [writing-for-agents](writing-for-agents/SKILL.md) | model | Reference for writing skills, CLAUDE.md, and any doc an agent consumes | mattpocock/skills@0ab1b63, verbatim |
 | [resolving-merge-conflicts](resolving-merge-conflicts/SKILL.md) | model | Work an in-progress merge/rebase conflict hunk by hunk, resolving by intent; never abort | mattpocock/skills@0ab1b63, verbatim |
 | [wait-what](wait-what/SKILL.md) | user (`/wait-what`) | Re-pitch the last message in plain English using the repo's CONTEXT.md vocabulary | mattpocock/skills@0ab1b63, adapted (multi-context ref dropped) |
+| [wrap-up](wrap-up/SKILL.md) | user (`/wrap-up`) | End-of-session ritual: arc summary, then commits/docs/cleanup/handoff via one checklist | own (designed 2026-08-20 via grilling) |
