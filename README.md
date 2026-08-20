@@ -29,3 +29,4 @@ Versioned with git; plugin-ready later by adding `.claude-plugin/plugin.json` if
 | [wrap-up](wrap-up/SKILL.md) | user (`/wrap-up`) | End-of-session ritual: arc summary, then commits/docs/cleanup/handoff via one checklist | own (designed 2026-08-20 via grilling) |
 | [unslop](unslop/SKILL.md) | model | Cut AI tells from written deliverables (pattern catalog + plain-speech rules) | cursor/plugins@51a96e0 (pstack), adapted (scoped to deliverables, Spanish note) |
 | [blast-radius](blast-radius/SKILL.md) | user (`/blast-radius`) | Prove the one fact a change is safe because of, via real queries; lineage-aware risk sweep | cursor/plugins@51a96e0 (pstack), rewritten for data/pipeline lineage |
+| [spinoff](spinoff/SKILL.md) | model | Fork a spinoff topic into an independent Herdr tab (or Agent-tool fork outside Herdr), sized to what it needs | own (designed via grill-me, 2026-08-20) |
