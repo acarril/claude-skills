@@ -174,8 +174,38 @@ On the work account, Gmail beats Slack twice over:
   seniority — far stronger than inferring from team membership, and the only defensible basis
   found for a `high` org weight.
 
-So: Slack for verified email/ID/title, Gmail for existence, spelling, and standing. Neither
-licenses a guess about the people who appear in neither.
+### The internal org chart beats both — query it
+
+The org chart is **authoritative and Slack is not**: Peirano's Slack title read "Strategic
+Planning Senior Manager" while the chart said **Planning Commerce Sr Director**, a rung
+higher. Silvestre Serantes has no Slack profile at all and is a **Vice President** with 123
+people under him.
+
+Get the reporting line live rather than trusting anything written down here:
+
+```bash
+python3 ~/.claude/skills/meliorg/scripts/meliorg.py chain --json
+python3 ~/.claude/skills/meliorg/scripts/meliorg.py reports igncampos
+```
+
+The `meliorg` skill owns the full source-precedence rule and the off-VPN staleness
+handling — read it rather than restating it here. Off-VPN the command serves cached data
+and says so; surface that, never present it as current.
+
+Direct-report **counts** come free with `reports`. Org **size** (Serantes' 123) does not —
+the API has no such field and a full crawl is infeasible, so treat any org-size figure as
+hearsay unless Alvaro supplies it.
+
+Consequences worth remembering: **Peirano is the skip-level**, so his requests are not
+stakeholder nice-to-haves. Janaína Silveira and Luis Vergari report to Peirano too, making
+them peers of Alvaro's boss. Juanpi Sitler reports to Silvestre. Natalia Quigua is a **Sr
+Manager with her own team**, not a working-level counterpart.
+
+If a session needs someone's rank, ask Alvaro for the org-chart view rather than inferring
+from Slack — a screenshot is enough and takes him seconds.
+
+So: org chart for rank and hierarchy, Slack for verified email/ID, Gmail for existence,
+spelling, and standing. None of them licenses a guess about people who appear in none.
 
 ### A name that fails both is a spelling problem, not a missing person
 
