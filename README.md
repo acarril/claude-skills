@@ -15,6 +15,7 @@ Versioned with git; plugin-ready later by adding `.claude-plugin/plugin.json` if
 
 | Skill | Invocation | What it does | Provenance |
 |---|---|---|---|
+| [meliorg](meliorg/SKILL.md) | model | MELI reporting lines: leader, chain, direct reports, peers, bounded subtree | own |
 | [handoff](handoff/SKILL.md) | user (`/handoff`) | Compact the conversation into a handoff doc for the next session | own |
 | [meet-notes](meet-notes/SKILL.md) | model | Distill Google Meet / Gemini notes into a project knowledge doc | own |
 | [title-refresh](title-refresh/SKILL.md) | user (`/title-refresh`) | Refresh a stale session title | own |
