@@ -11,6 +11,8 @@ Two choices, trading the two loads:
 
 Pick model-invocation only when the agent must reach the skill on its own, or another skill must. If it only ever fires by hand, make it user-invoked and pay no context load.
 
+**`description` is the only field that drives invocation.** Skills from MELI's marketplaces (`grid-sharing`, the cowork plugins) carry extra frontmatter — `triggers:`, `tags:`, `category:`, `version:`, `dependencies:` — that is Cowork metadata Claude Code does not read. A phrase listed under `triggers:` will *not* fire the skill. When reasoning about whether two skills compete, compare their `description` fields and nothing else: read the skill listing the model actually receives, not the frontmatter on disk. Getting this wrong invents conflicts that do not exist — `grid-sharing` lists `find person meli` under `triggers:`, yet its description mentions no person lookup at all, so it never fires on one.
+
 Shared reference that two user-invoked skills both need can live in neither: with no descriptions, neither can fire the other. Push it to a plain file outside the skill system: external reference any skill can point at.
 
 ## Splitting by invocation
