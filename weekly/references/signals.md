@@ -174,35 +174,39 @@ On the work account, Gmail beats Slack twice over:
   seniority — far stronger than inferring from team membership, and the only defensible basis
   found for a `high` org weight.
 
-### The internal org chart beats both — query it
-
-The org chart is **authoritative and Slack is not**: Peirano's Slack title read "Strategic
-Planning Senior Manager" while the chart said **Planning Commerce Sr Director**, a rung
-higher. Silvestre Serantes has no Slack profile at all and is a **Vice President** with 123
-people under him.
-
-Get the reporting line live rather than trusting anything written down here:
+### Rank and hierarchy: query `meliorg`, do not reconstruct by hand
 
 ```bash
-python3 ~/.claude/skills/meliorg/scripts/meliorg.py chain --json
-python3 ~/.claude/skills/meliorg/scripts/meliorg.py reports igncampos
+S=~/.claude/skills/meliorg/scripts/meliorg.py
+python3 $S find "Ignacio Campos"   # name or LDAP -> full record
+python3 $S chain <ldap>            # up the reporting line to the root
+python3 $S reports <ldap>          # direct reports
 ```
 
-The `meliorg` skill owns the full source-precedence rule and the off-VPN staleness
-handling — read it rather than restating it here. Off-VPN the command serves cached data
-and says so; surface that, never present it as current.
+The `meliorg` skill owns the full source-precedence rule and the off-VPN staleness handling —
+read it rather than restating it here. Off-VPN the command serves cached data and says so;
+surface that, never present it as current. Watch the 60-req/min limit: `find` is one request,
+`chain` about six.
 
-Direct-report **counts** come free with `reports`. Org **size** (Serantes' 123) does not —
-the API has no such field and a full crawl is infeasible, so treat any org-size figure as
-hearsay unless Alvaro supplies it.
+**Slack titles are wrong often enough to be unusable for rank.** Measured on 2026-08-20:
+Peirano read a rung low, Diogo Pena read "Advertising Product Manager" when he is a Product
+Advertising *Expert*, and **both** homonyms of Nicolás Repetto had stale titles. Several VPs
+have no Slack profile at all.
+
+Names also collide — Repetto and Rodrigo Palma each returned two people. `find` matches on
+name or LDAP only, never department or title, so show the candidates and let Alvaro pick.
+Carry the **LDAP username** forward; it is the only stable key.
+
+Direct-report **counts** come free with `reports`. Org **size** (Serantes' 123) does not — the
+API has no such field and a full crawl is infeasible, so treat any org-size figure as hearsay
+unless Alvaro supplies it. The figures currently in the Notion People rows came from org-chart
+screenshots he shared, which is a legitimate source; `meliorg` cannot reproduce them.
 
 Consequences worth remembering: **Peirano is the skip-level**, so his requests are not
 stakeholder nice-to-haves. Janaína Silveira and Luis Vergari report to Peirano too, making
 them peers of Alvaro's boss. Juanpi Sitler reports to Silvestre. Natalia Quigua is a **Sr
-Manager with her own team**, not a working-level counterpart.
-
-If a session needs someone's rank, ask Alvaro for the org-chart view rather than inferring
-from Slack — a screenshot is enough and takes him seconds.
+Manager with her own team**, not a working-level counterpart. Tharles Conegundes sits under
+Tech & Ops (NPS Commerce), not Commerce Planning — a dependency, not a teammate.
 
 So: org chart for rank and hierarchy, Slack for verified email/ID, Gmail for existence,
 spelling, and standing. None of them licenses a guess about people who appear in none.
