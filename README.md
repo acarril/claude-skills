@@ -10,6 +10,15 @@ Versioned with git; plugin-ready later by adding `.claude-plugin/plugin.json` if
   should reach on its own keep a `description` with trigger conditions.
 - **Provenance.** Ported/adapted skills record their upstream repo + commit here, so they
   can be diffed against upstream later.
+- **Dispatch cheap, self-contained work.** A skill whose real work is small, mechanical and
+  fire-and-forget should spawn a background `haiku` subagent and have the main agent do
+  nothing but dispatch — otherwise it spends the session's model on it, blocks the turn, and
+  dumps tool output into context. `title-refresh` is the reference implementation.
+  Two constraints shape it: a `fork` inherits the conversation but is **pinned to the caller's
+  model**, so a fresh agent is the only way to get a cheap one; and a fresh agent has no
+  context, so anything it needs must be **read off disk or inlined in the prompt**. Filtering
+  a session log to text-only turns costs ~2.6% of the file, which makes "read it off disk"
+  cheap enough to beat inheriting it.
 
 ## Index
 
@@ -18,7 +27,7 @@ Versioned with git; plugin-ready later by adding `.claude-plugin/plugin.json` if
 | [meliorg](meliorg/SKILL.md) | model | MELI reporting lines: leader, chain, direct reports, peers, bounded subtree | own |
 | [handoff](handoff/SKILL.md) | model | Compact the conversation into a handoff doc for the next session | own |
 | [meet-notes](meet-notes/SKILL.md) | model | Distill Google Meet / Gemini notes into a project knowledge doc | own |
-| [title-refresh](title-refresh/SKILL.md) | user (`/title-refresh`) | Refresh a stale session title | own |
+| [title-refresh](title-refresh/SKILL.md) | user (`/title-refresh`) | Refresh a stale session title; dispatches a background `haiku` subagent that reads the conversation off disk | own |
 | [grill-me](grill-me/SKILL.md) | model | Relentless interview over a design tree of decisions, rounds via AskUserQuestion | mattpocock/skills@0ab1b63, adapted (primitive merged in; was `grilling`) |
 | [diagnosing-bugs](diagnosing-bugs/SKILL.md) | model | Phase-gated diagnosis for hard bugs and wrong numbers: red-capable feedback loop before any hypothesis | mattpocock/skills@0ab1b63, rewritten (data/pipeline loop menu, SQL regression checks) |
 | [domain-modeling](domain-modeling/SKILL.md) | model | Sharpen project terminology into a CONTEXT.md glossary; record hard-to-reverse choices as ADRs | mattpocock/skills@0ab1b63, adapted (causal-inference framing, single-context only) |
