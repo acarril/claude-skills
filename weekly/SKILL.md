@@ -17,7 +17,22 @@ what actually happened; a scan is only a proposal.
 Default window: since the most recent file in `~/Meli/weekly/`. If none exists, since last
 Monday. If `$ARGUMENTS` names a date or range, use that instead.
 
-State the window out loud before scanning.
+**Anchor the start to when the previous report was *written*, not to its filename date.**
+The file is named for the Friday, but it is routinely drafted a day early — so anything that
+lands between the drafting and the nominal date falls into a gap and is never reported by
+either run:
+
+```bash
+ls -t ~/Meli/weekly/*.md | head -1 | xargs stat -f '%Sm' -t '%Y-%m-%d %H:%M'
+```
+
+Use that timestamp as the start. Measured 2026-08-23: the previous report was written Thursday
+10:17 and named `2026-08-21.md`; an `fvf-elasticity` commit at Thursday 15:44 and the
+`ghost-ads` meeting with Leo on Friday both vanished, and the run reported two projects quiet
+that were not. When in doubt overlap rather than gap — last week's file is right there to
+dedupe against, and a repeated bullet is a cheap error while a dropped one is invisible.
+
+State the window out loud before scanning, including the anchor timestamp you used.
 
 ## Step 2 — Scan
 
