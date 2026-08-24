@@ -1,69 +1,72 @@
-# Voice and layout
+# Audience, format, register
 
-Two separate things, do not conflate them:
+Three separate things, kept separate:
 
-- **Register** — how the sentences sound. Spanish, his voice. The gold standard below governs.
-- **Layout** — how the file is structured. Markdown, spec below. The gold standard does *not*
-  govern this; it was pasted as plain text and is not a layout reference.
-
----
-
-# Layout — `~/Meli/weekly/YYYY-MM-DD.md`
-
-This file is Alvaro's working artifact. It must be scannable in ten seconds. Use real
-markdown; never emit a wall of unmarked lines.
-
-```markdown
-# Semana <start> → <end>
-
-**Se movió:** `proj` · `proj`
-**Quieto:** `proj` · `proj`
+- **Audience** — who reads it and what they do with it. Governs what survives step 3's test.
+- **Format** — Slack markup for the post; markdown for the file. The post spec governs.
+- **Register** — how the sentences sound. Spanish, his voice. The gold standard governs.
 
 ---
 
-## <canonical-project-key>
+# Audience — dual, and both halves are real
 
-**<Bloque temático>**            ← only when a project has 2+ distinct threads
-- bullet
-- bullet
-- **Next:** <commitment>
-- **Esperando:** <person/team> — <what and why it blocks>
+The post goes in the thread under the `Weekly EA` bot's Monday prompt in `#commerce-bids-ea`
+(`C068QV1QALA`). Readers: **Nacho** (his leader) and the four other E&A ICs — Kevin Traynor,
+Joao Reboucas, Cleyton de Farias, Daniel Labarca.
 
----
+**Nacho** needs what happened and the next step per project, phrased so he can lift a claim
+upward without asking a follow-up. His quarterly update goes to Peirano and the CEO.
 
-## Sin updates
+**The team** needs findings, blockers and results socialized. The post is the **agenda for
+Monday's meeting**, where the lists are read and discussed — so a bullet's second job is to
+earn a question.
 
-| Proyecto | |
+Reactions and replies in Slack are near zero and that is not a signal of failure: the
+engagement happens in the meeting, not in the thread.
+
+## Calibration
+
+Length norms on this team vary wildly, so there is no house style to conform to. His target
+sits **between Daniel and Kevin**:
+
+| | |
 |---|---|
-| `proj` | <one-line reason, or "Sin updates"> |
+| **Daniel** | two projects, ~2 bullets each, prose sentences, no `Next`. Too concise. |
+| **Kevin** | ~14 bullets over 5 sections, `[SHP]`-style domain tags, explicit `Pending:` and ETAs. |
+| **Joao** | terse, `[done]` / `[Next]` / `[Later]` status tags, nested bullets. Very scannable. |
+| **Cleyton** | 3–4× everyone else, into KKT multipliers and adjoint gradients. **The anti-pattern.** |
+
+He carries more projects than anyone else on the team, so his length comes from project
+*count*, not depth per project. That is why the cap is per track and the test is bottom-up.
 
 ---
 
-## 🔒 Notas para mí — no van al post
+# Format — the post
 
-**Chequeo de `Next:` de la semana pasada:** <each prior Next, and whether it happened>
+Slack renders `*bold*`, `_italic_`, `` `code` ``, `•` bullets and `<url|label>` links. It does
+**not** render `##` headings or markdown tables — those paste as literal `#` and `|`
+characters, which is exactly what happened on 2026-08-24.
 
-**Para revisar:**
-- <anything worth his attention: silent active projects, drifting objectives, overlong sections>
+```
+*project-name*
+
+• bullet
+• *Track label*: bullet. *Next:* commitment
+• *Esperando:* <person> desde <date>
+
+*Sin updates:* proj · proj
 ```
 
-Rules:
+- Project name on its own line in `*bold*`, blank line, then bullets.
+- `*Next:*` and `*Esperando:*` are structural markers — step 6 reads them straight into the
+  Portfolio `Next` and `Blocked on` fields. A commitment gets its own marker rather than being
+  buried in narrative.
+- Single asterisks. `**Next:**` renders the asterisks literally.
+- Links as `<https://…|label>`, hung on the artifact's name.
+- `*Sin updates:*` is one line naming the projects, never a table.
 
-- `## <project>` per project that moved, canonical key, backticks off in the heading.
-- Bold thematic sub-labels only when a project genuinely has several threads. A project with
-  three bullets does not need them.
-- **`Next:` and `Esperando:` are structural markers, not prose.** Step 5 reads them directly
-  to derive the Portfolio `Next` and `Blocked on` fields. Never bury a commitment inside a
-  narrative bullet — if it is a commitment, it gets its own `**Next:**` bullet.
-- Quiet projects go in the `Sin updates` table, never as empty `##` sections.
-- The 🔒 section is always last and always separated by `---`. Nothing in it is team-facing.
-
-## Posting to Slack
-
-Slack does not render `##` headings or tables — they paste as literal characters. The file is
-for him; the post is a separate render. When he asks to post, emit a plain-text version:
-project name on its own line, blank line, bullets as bare lines, no markdown syntax. That is
-what the gold standard below looks like, and that is why it looks like that.
+Write for the **eye**: this is scanned on screen during the meeting, so structure carries more
+than cadence.
 
 ---
 
@@ -73,30 +76,21 @@ Plain, neutral Latin American Spanish, first person, informal, for teammates who
 the projects. No voseo, no Peninsular forms, no country-specific slang. Everything else in the
 session stays in English — this is one of the requested-artifact exceptions.
 
-Keep English business/tech/analytics terms wherever they are what people actually say —
-forcing a translation reads worse than the loanword.
+Keep English business/tech/analytics terms wherever they are what people actually say; forcing
+a translation reads worse than the loanword.
 
 - Stay English: `eval harness`, `golden set`, `LLM`, `spot-check`, `shadow`, `dev pass`,
   `workflow`, `dashboard`, `landing page`, `tabs`, `stakeholders`, `buyers`, `flags`, `bugs`,
-  `scanner`, `Next`, `peak`, `downstream`, `feed`, `fix`, `router`, `prompt`, `holdout`.
+  `scanner`, `Next`, `peak`, `downstream`, `feed`, `fix`, `router`, `prompt`, `holdout`,
+  `stand by`, `at risk`.
 - Stay Spanish: `encuesta`, `cuotas`, `órdenes`, `ingesta`, `hallazgos`, `mesas locales`,
   `cobertura`, `escalar`, `mediana`.
 
-## Outcome over activity
-
-Write what is now true, not what you spent time on.
-
-- Yes: "en la práctica Tier D equivale a la mediana del sitio, y nada más sofisticado mejora
-  eso (restricción de datos, no de modelo)"
-- No: "trabajé en el análisis de sensibilidad de Tier D"
-
-Numbers earn their place: `~135k órdenes`, `250+ checks`, `200k buyers`, `wave 4`.
-
-Social notes belong in the update and nowhere else — thanking people, crediting contributions.
+Social notes belong in the post and nowhere else — thanking people, crediting contributions.
 
 ## Gold standard — register only
 
-Alvaro's own update from 2026-08. Match these *sentences*. Ignore its flat layout.
+His own update from 2026-08. Match these *sentences*.
 
 ```
 buyer-panel
@@ -113,12 +107,35 @@ fvf-elasticity
 Análisis de sensibilidad "qué tan malas son las estimaciones Tier D?" con validación out-of-sample
 en la práctica Tier D equivale a la mediana del sitio, y nada más sofisticado mejora eso (restricción de datos, no de modelo)
 Next: pensar en cómo comunicar esto
-
-
-ghost-ads
-Sin updates, aparte de ser utilizado como input en v2 de pads-incrementality.
 ```
 
-What it does *not* do: no preamble, no "esta semana avancé en", no summary paragraph, no
-padding to fill a section. Capitalization is inconsistent and that is fine — do not tidy it
-into corporate prose.
+No preamble, no "esta semana avancé en", no summary paragraph, no padding. Capitalization is
+inconsistent and that is fine — leave it rather than tidying it into corporate prose.
+
+---
+
+# Format — the file
+
+`~/Meli/weekly/YYYY-MM-DD.md` is the byproduct: the posted text verbatim, then the 🔒 half.
+It is his working artifact and the source step 6 derives from, so it holds everything the post
+holds plus what the team never sees.
+
+```markdown
+# Semana <start> → <end>
+
+<sub>Ventana anclada al mtime del reporte anterior. Posteado en <thread>.</sub>
+
+<the post, verbatim>
+
+---
+
+## 🔒 Notas para mí — no van al post
+
+**Chequeo de `Next:` de la semana pasada:** <each prior Next, and whether it happened>
+
+**Compromisos vencidos:** <stale `- [ ]` from dated notes, older than ~3 weeks>
+
+**Para revisar:** <projects that ran long, silent active projects, what was cut>
+```
+
+The 🔒 section is always last. Nothing in it is team-facing.
