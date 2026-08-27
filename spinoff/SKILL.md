@@ -11,7 +11,7 @@ A conversation on topic A produces a genuine spinoff, topic B: worth its own thr
 
 The **payload** is everything B is told at launch. Size it to how self-contained B is:
 
-- **Prompt only.** B is a fully-specified, bounded ask ("check whether the join fans out on seller_id"). A short prompt is the whole payload.
+- **Prompt only.** B is a fully-specified, bounded ask ("fix the null handling in the shipments step and open a PR"). A short prompt is the whole payload. Bounded does not mean read-only — most spinoffs edit code, which is why step 3 exists.
 - **Prompt + throwaway handoff doc.** B needs background A holds but isn't fully bounded yet. Call the Skill tool with "handoff" for the doc, then reference it from the prompt.
 - **Full handoff.** B is substantial enough that the `/handoff` doc is the payload's primary artifact, not a side reference.
 
@@ -19,22 +19,48 @@ State your recommended size and a one-line gist of the payload.
 
 ## 2. One preview gate
 
-A single AskUserQuestion call: the recommended size first, the payload's gist, and the other sizes as options. Approving fires step 3 immediately. This is the only interruption in the flow.
+A single AskUserQuestion call: the recommended size first, the payload's gist, and the other sizes as options. Approving fires steps 3 and 4 immediately. This is the only interruption in the flow.
 
-## 3. Fire
+## 3. Give B its own tree
+
+B writes. A spinoff usually creates a branch, commits, and opens a PR, so B cannot share A's directory: one directory has one HEAD and one index. B's `git checkout -b` moves A onto B's branch, and B's `git add` stages A's uncommitted edits into B's commit. No instruction to B makes that safe. So B gets its own git worktree by default.
+
+Resolve A's cwd first. In Herdr that is `herdr pane get <parent pane>` — the same call returns the `display_agent` step 4 needs, so make it once and keep both values. Otherwise use `pwd`. Then:
+
+1. `git -C <cwd> rev-parse --show-toplevel`. If it fails, A is not in a repo — skip the rest of this section and hand B A's cwd unchanged. `~/.claude` is the common case. Use this **repo root**, not the raw cwd, for the path in the next step: A may have `cd`ed into a subdirectory, and `<subdir>-wt-<slug>` would drop a second checkout of the whole repo inside A's own tree, where it shows up as untracked junk in A's status.
+2. `git -C <root> worktree add <root>-wt-<slug> -b <slug>`, where `<slug>` is a short kebab-case tag for B's topic. This branches from A's current HEAD, which is what "carry only the context B needs" means for git. B renames or rebases the branch itself if its task needs a different base.
+3. Link the untracked files B needs, because a worktree receives only tracked files. Read the real list before you link — it differs per repo, and a guessed name creates a dead symlink:
+
+   ```
+   git -C <root> status --porcelain --ignored -uall
+   ```
+
+   - Symlink anything A and B must agree on. `.grid-mappings.json` is the one that bites: without it B does a fresh Grid upload instead of a version bump, and the doc's URL changes.
+   - Symlink large ignored data directories rather than copy them.
+   - Copy interpreter pins such as `.python-version`.
+   - Do **not** symlink `.venv`. One shared environment works until B changes a dependency, and then B's `poetry install` mutates A's environment. B runs its own install when it first needs to execute code, not before.
+4. Give B the path inside the worktree that mirrors where A was: worktree root plus A's cwd relative to `<root>`, so B lands in the same subdirectory A was working in. Nothing removes the worktree automatically, so report its path and let the user `git worktree remove` it once B's PR merges.
+
+One exception: a worktree hides A's *uncommitted* edits, because it starts from a commit. If B's task depends on work A has not committed, give B A's cwd instead and say so in the report, so the git hazard above is a known risk rather than a surprise.
+
+## 4. Fire
+
+B runs the same model as A, unless the user asked for a different one.
 
 Check `HERDR_ENV`:
 
 - **`HERDR_ENV=1`**: call the Skill tool with "herdr" for the CLI mechanics, then:
-  1. Query the parent pane's cwd fresh, at fire time (the parent may have `cd`ed mid-conversation).
-  2. `herdr tab create --cwd <that cwd>`. `--label` takes a rough placeholder; the tab renames itself once B has a title.
-  3. `herdr agent start <name> --kind claude --pane <new pane>`.
-  4. `herdr agent prompt <name> "<the payload>"`, without `--wait`.
-- **Not in Herdr**: fall back to the Agent tool, `subagent_type: "fork"`, with the same payload. It runs in-process rather than in a tab.
+  1. Query the parent pane fresh, at fire time — step 3 already made this call, so reuse its result. One `herdr pane get <parent pane>` returns both things you need: its `cwd` (the parent may have `cd`ed mid-conversation) and its `display_agent`, which `~/.config/herdr/herdr-model-label.sh` keeps set to A's live model (`opus-5`, `sonnet-5`) and which follows a mid-session `/model` switch.
+  2. Derive the model. Take the segment of `display_agent` before the first `-` (`opus-5` → `opus`) and use it as the alias if it is `opus`, `sonnet`, `haiku`, or `fable`. Do not try to rebuild a full model id from `display_agent`: the label is lossy for dotted versions (`haiku-4.5` is not `claude-haiku-4-5-20251001`), and the alias already means "latest of that family". Anything else — null on a fresh pane whose first `Stop` has not fired yet, a `gpt-*` label from a codex parent, a stale topic name — falls back to `jq -r '.model // empty' ~/.claude/settings.json`, passed to `--model` **verbatim**: that is a settings token like `opus[1m]`, not a family alias, so do not validate it against the list above. Only if that is empty too, omit `--model`. Do not read "omit" as "B gets A's model anyway": the default this machine resolves to is an org-enforced `claude-sonnet-5` carrying `override_user_selection`, which outranks the settings.json preference at startup, and a resumed session re-resolves the same way rather than remembering what it ran on. A `--model` flag is the only thing that beats it.
+  3. `herdr tab create --cwd <B's cwd from step 3> --env HERDR_LAUNCH_SKIP=1`. **Never pass `--label`.** B names its own tab: Claude Code generates a conversation title, and the `herdr-automatic-rename` plugin copies it over. A placeholder label defeats that permanently — the plugin reads any non-placeholder label on first sight as a hand rename and sets `enabled:false` for that tab forever, so your guess sticks and B's real title never lands. With no `--label` the tab starts as a bare number, which the plugin treats as unowned and adopts. **`--env HERDR_LAUNCH_SKIP=1` is required on this machine**: `terminal.default_shell` is a picker script, and its fzf holds the new pane's foreground, so the next step fails with `agent_pane_busy` without it. If you inherited a pane already sitting on the picker, `herdr pane send-keys <pane> Escape` drops it to a shell.
+  4. `herdr agent start <name> --kind claude --pane <new pane> -- --model <the model from step 2>`. Native agent args go after `--`; drop `-- --model ...` only when step 2 ended with nothing at all. `<name>` is a **handle** for the commands below, not a display label — keep it short and mechanical, and do not try to make it descriptive.
+  5. Mask that handle: `herdr pane report-metadata <new pane> --source local:model-label --display-agent <the parent's display_agent from step 1>`. The sidebar's `agent` token resolves display_agent > name > kind, and `herdr-model-label.sh` only writes on Stop, so without this the handle is what shows until B finishes its first turn. B runs the parent's model, so the parent's label is the correct value, and the hook overwrites it with a freshly-read one later. Skip if step 1 found no `display_agent`.
+  6. `herdr agent prompt <name> "<the payload>"`, without `--wait`.
+- **Not in Herdr**: fall back to the Agent tool, `subagent_type: "fork"`, with the same payload, plus `isolation: "worktree"` whenever step 3 found a repo. It runs in-process rather than in a tab, and always inherits A's model, so steps 1–2 do not apply. The fork creates and cleans up its own worktree, so step 3's `worktree add` is redundant here — skip it, and put step 3's linking instructions in the payload for B to run against A's cwd.
 
-## 4. Report and continue
+## 5. Report and continue
 
-Name where B is running (its tab and agent, or "forked" for the fallback), then continue working on A.
+Name where B is running (its tab and agent, or "forked" for the fallback) and, when step 3 made one, B's worktree path as a `file://` URL plus the branch it sits on, then continue working on A. Refer to B by its tab id and pane, not by a name you invented — the tab is still a bare number at this point and will name itself shortly.
 
 The two branches then diverge, and the report says which applies:
 
