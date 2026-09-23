@@ -28,6 +28,11 @@ session), which is the whole conversation minus the tool noise a title shouldn't
 One `Agent` call: `subagent_type: "general-purpose"`, `model: "haiku"`. Pass the block below
 verbatim as the prompt, appending the user's `$ARGUMENTS` as a steer if they gave any.
 
+**Also append the session id explicitly**, as a belt-and-braces against the wrong-file failure
+in step 1 — you know it for free (it is `$CLAUDE_CODE_SESSION_ID`, and it is the directory name
+in your scratchpad path). Add one line:
+`Session id: <id> — use this if $CLAUDE_CODE_SESSION_ID is not set in your shell.`
+
 Then tell the user it's dispatched and stop. The result arrives as a task notification;
 relay the `old -> new` line when it does.
 
@@ -47,16 +52,30 @@ Non-obvious mechanics. Get these wrong and it fails silently:
   in-memory copy, so an in-place edit to an old line is not the latest record and is ignored.
 - `custom-title` outranks `ai-title` in display precedence.
 
-1. Locate the live session file. Derive the directory from `$PWD` rather than guessing;
-   the newest `.jsonl` is this session (subagents like you do not create one, so `ls -t`
-   is safe here). Print the file and its current title:
+1. Locate the live session file **by session id, never by mtime**. The id is in
+   `$CLAUDE_CODE_SESSION_ID`, which your shell inherits from the parent session; the caller
+   also passes it to you explicitly. Derive the directory from `$PWD`. Print the file and its
+   current title:
 
    ```bash
    proj=~/.claude/projects/$(echo "$PWD" | sed 's/[/.]/-/g')
-   file=$(ls -t "$proj"/*.jsonl | head -1)
+   sid="${CLAUDE_CODE_SESSION_ID:?no session id in env - use the one the caller gave you}"
+   file="$proj/$sid.jsonl"
+   [ -f "$file" ] || { echo "STOP: $file does not exist"; exit 1; }
    echo "$file"
    grep '"type":"ai-title"\|"type":"custom-title"' "$file" | tail -1
    ```
+
+   **Do not fall back to `ls -t | head -1`.** It looks safe — subagents do not create their
+   own log — but two sessions in one project routinely share an mtime to the second, and the
+   tie is broken arbitrarily. When it breaks the wrong way you silently retitle *someone
+   else's* session with a title composed from *their* conversation, and the real session keeps
+   its stale title. Observed 2026-08-25. If you cannot resolve an id, **stop and report it** —
+   guessing is worse than doing nothing.
+
+   Sanity check before writing: the conversation you read in step 4 must plausibly be the one
+   whose title the caller asked you to refresh. If it is about unrelated work, you have the
+   wrong file — stop.
 
 2. Mask check. If the file has any `custom-title` record, STOP and report that an
    `ai-title` write would be invisible and the user should use `/rename` instead:
@@ -65,10 +84,12 @@ Non-obvious mechanics. Get these wrong and it fails silently:
    grep -q '"type":"custom-title"' "$file" && echo "HAS custom-title - stop"
    ```
 
-3. Get the sessionId:
+3. Confirm the sessionId. You already have `$sid` from step 1; verify the file agrees, and
+   stop if it does not (that means you resolved the wrong file):
 
    ```bash
-   sid=$(grep -o '"sessionId":"[^"]*"' "$file" | head -1 | cut -d'"' -f4)
+   [ "$(grep -o '"sessionId":"[^"]*"' "$file" | head -1 | cut -d'"' -f4)" = "$sid" ] \
+     || { echo "STOP: sessionId in file != $sid"; exit 1; }
    ```
 
 4. Read the conversation. Take text-only turns from both speakers, drop slash-command
@@ -116,5 +137,9 @@ Non-obvious mechanics. Get these wrong and it fails silently:
 - **Editing the existing title line** instead of appending -> ignored by Claude Code.
 - **Finding the dir with `ls`/guessing** instead of deriving it from `$PWD` -> wrong session
   when many project dirs exist.
+- **Picking the file with `ls -t | head -1`** instead of `$CLAUDE_CODE_SESSION_ID` -> silently
+  retitles a *different* session in the same project whenever two logs share an mtime. This is
+  the one failure that is invisible from inside the subagent, because the title it writes looks
+  correct for the file it read. Resolve by id, verify, or stop.
 - **Writing `ai-title` while a `custom-title` exists** -> invisible. Do the mask check.
 - **Hand-building the JSON** with a title containing quotes/colons -> malformed line.

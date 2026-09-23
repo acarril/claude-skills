@@ -42,43 +42,111 @@ last month's meeting date.
 date.** Surface it. If the meeting is old, say when it happened — "distilé las notas de las
 reuniones de PP del 05 al 14/08" is the honest line, and it is real work.
 
-## 4. Claude Code sessions — the advisory record
+## 4. Agent sessions — the advisory record
 
-Transcripts live in `~/.claude/projects/<mangled>/`, where `<mangled>` is the absolute path
-with every `/` replaced by `-`. A project usually has **two** directories — one rooted at the
-repo, one at `projects/<name>` — and both must be checked:
+**The source that catches advisory work.** It leaves no commits, so a scan that skips it lets
+O3 fail silently. Use `memex`, not a glob over `~/.claude/projects/`: the glob is Claude-only,
+and Codex holds more than half of these sessions.
 
+Run `memex index` once at the start of the scan (~5s, incremental). `memex sessions` does
+**not** auto-index, so without this the last few days are missing.
+
+### Discovery — one call covers every project
+
+```bash
+memex sessions --since <window start> --limit 500 --json-array
 ```
--Users-acarril-Meli-price-perception
--Users-acarril-Meli-price-perception-projects-price-perception
-```
 
-Extract **user messages only**, filtered by entry timestamp (not file mtime — a session can
-span weeks). His own messages are short, carry the intent, and are cheap to read; the
-assistant side is enormous and mostly redundant.
+Each row carries `session_id`, `source`, `source_path`, `cwd`, `git_root`, `started_at`,
+`last_at`, `message_count`. **Group by `git_root`** — its basename is the directory key in
+`topology.md`. This replaces the mangled-path recipe outright: no computing
+`-Users-acarril-Meli-<dir>`, and no checking two directories per project, because memex
+resolves both the repo root and `projects/<name>` to the same git root.
+
+Scope to one repo with `--cwd ~/Meli/<dir>`. It matches by path component, so
+`--cwd ~/Meli/buyer-panel` does **not** pull in `buyer-panel-197` or `buyer-panel-deck` —
+the triple-count trap does not apply here.
+
+Two traps of its own:
+
+- **`--since` means "session active in the window"**, not "has an in-window user message". It
+  over-includes: a session whose real work predates the window appears if anything touched it
+  since. The per-message date filter below is what actually enforces the window. Never report
+  a session as this week's work just because it was listed.
+- **Codex forks share one `session_id` across several `rollout-*.jsonl` files.** Always pass
+  `--source-path` when fetching, and dedupe on `(session_id, ts, text)`.
+
+### Extraction — user messages only
+
+His own messages are short, carry the intent, and are cheap to read; the assistant side is
+enormous and mostly redundant. Filter by entry timestamp, never file mtime — a session can
+span weeks.
+
+`memex session` pages at **500 records** and sessions here reach several thousand. Paginate
+with `--offset` or you silently truncate the biggest projects: measured on the 2026-08-18
+window, skipping pagination lost 102 of 367 Claude messages, all from the longest sessions,
+with no error.
 
 ```python
-import json, glob
+import json, subprocess, datetime
 START = '<window start>'
 SKIP = ('<local-command', '<command-name', '<command-message', '[Request interrupted',
-        'Base directory', '<system-reminder', '<task-notification')
-for p in glob.glob(f'{mangled_dir}/*.jsonl'):
-    for line in open(p, errors='ignore'):
-        try: j = json.loads(line)
-        except: continue
-        if j.get('type') != 'user': continue
-        ts = (j.get('timestamp') or '')[:16]
-        if ts[:10] < START: continue
-        c = (j.get('message') or {}).get('content')
-        txt = c if isinstance(c, str) else ' '.join(
-            x.get('text','') for x in c if isinstance(x, dict) and x.get('type') == 'text')
-        txt = txt.strip()
+        'Base directory', '<system-reminder', '<task-notification',
+        '# AGENTS.md instructions')
+PAGE = 500
+
+def day(ms):
+    return datetime.datetime.fromtimestamp(ms / 1000, datetime.UTC).strftime('%Y-%m-%d')
+
+def records(session_id, source_path):
+    off = 0
+    while True:
+        out = subprocess.run(
+            ['memex', 'session', session_id, '--source-path', source_path,
+             '--offset', str(off), '--limit', str(PAGE)],
+            capture_output=True, text=True).stdout.splitlines()
+        for line in out:
+            try: yield json.loads(line)['record']
+            except Exception: pass
+        if len(out) < PAGE: return
+        off += PAGE
+
+rows = json.loads(subprocess.run(
+    ['memex', 'sessions', '--since', START, '--limit', '500', '--json-array'],
+    capture_output=True, text=True).stdout)
+
+seen = set()
+for r in rows:
+    root = r.get('git_root') or ''
+    if not root.startswith('/Users/acarril/Meli/'): continue
+    proj = root.rsplit('/', 1)[-1]
+    for rec in records(r['session_id'], r['source_path']):
+        if rec.get('role') != 'user': continue
+        if day(rec['ts']) < START: continue
+        txt = (rec.get('text') or '').strip()
         if not txt or txt.startswith(SKIP) or len(txt) < 25: continue
-        print(ts, txt[:260].replace('\n', ' '))
+        key = (r['session_id'], rec['ts'], txt)
+        if key in seen: continue
+        seen.add(key)
+        print(proj, r['source'], day(rec['ts']), txt[:260].replace('\n', ' '))
 ```
 
-When a specific claim needs the answer and not just the question, grep the same files for the
-keyword and pull the adjacent assistant message. Do this sparingly — the files reach 10MB+.
+Records nest under a `record` key. `ts` is epoch **milliseconds** for both Claude and Codex.
+
+Verified against the old glob on the 2026-08-18 window: exact per-project parity on Claude
+messages (367), plus 135 Codex messages the glob structurally could not see — including a
+600-record Codex econometric review of a `ghost-ads` Grid doc that produced no commits and
+would otherwise have vanished from the weekly.
+
+When a specific claim needs the answer and not just the question, search inside the session
+instead of grepping a 10MB file:
+
+```bash
+memex search "<exact term>" --session <session_id> --sort ts --limit 50
+```
+
+`memex search` requires a non-empty query — there is no sweep mode, which is why discovery
+goes through `memex sessions` and not `search`.
 
 ### Care required
 
