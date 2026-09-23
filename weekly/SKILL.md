@@ -71,11 +71,8 @@ the drafting and the nominal date falls into a gap and is reported by neither ru
 ls -t ~/Meli/weekly/????-??-??.md | head -1 | xargs stat -f '%Sm' -t '%Y-%m-%d %H:%M'
 ```
 
-Measured 2026-08-23: the previous report was written Thursday 10:17 and named `2026-08-21.md`.
-Twenty-eight commits across four projects landed in the gap — the whole CSAT–IHT panel, three
-`pricing-combopremium` blockers with O1 at risk, an `fvf-elasticity` dead end — and the run
-reported two projects quiet that were not. Overlap rather than gap: last cycle's file is right
-there to dedupe against, so a repeated bullet is cheap where a dropped one is invisible.
+Overlap rather than gap: last cycle's file is right there to dedupe against, so a repeated
+bullet is cheap where a dropped one is invisible.
 
 State the window out loud before scanning, including the anchor timestamp you used.
 
@@ -109,20 +106,12 @@ that plausibly passes the test gets written as a real, finished bullet, includin
 stricter reading would drop. He cuts; you do not. A bullet he never saw is a decision you made
 for him. Over-inclusive means bullet *count*; it never means bullet *length*.
 
-### Length: the rule that was missing
+### Length
 
-Measured 2026-09-07, the morning Nacho said the post was too verbose. Same bullet count as the
-two teammates who posted beside him; twice the words, five times the numbers:
-
-| | bullets | words | median words/bullet | longest | numbers/bullet |
-|---|---|---|---|---|---|
-| his post | 14 | 626 | 38 | 118 | 3.7 |
-| Daniel | 14 | 288 | 17 | 53 | 0.1 |
-| Kevin | 13 | 287 | 23 | 43 | 0.7 |
-
-The prune round controls how many bullets survive; nothing controlled how long each one was,
-and the test below rewarded numbers, so every bullet carried result + mechanism + three
-numbers. The rules, applied to every candidate **as it is drafted**, not after the cuts:
+The prune round controls how many bullets survive, not how long each one is — and the test
+below rewards numbers, which inflates bullets. The team's measured norm is in
+`references/voice.md` → Calibration. Apply these to every candidate **as it is drafted**, not
+after the cuts:
 
 - **~20 words per bullet, hard cap 40.** One sentence of state; optionally one of consequence
   or `Next:`. A bullet over 40 words is two bullets or one bullet plus a talking point.
@@ -163,7 +152,7 @@ What the test decides in the cases that recur:
 **Links are the compression lever.** A bullet whose artifact exists — Grid doc, dashboard,
 deck, published table — carries the link and then states only the outcome. Depth becomes
 optional rather than absent, and the bullet stops at the result. This is the single biggest
-lever on length; his own 2026-08-17 post used it and the ritual had lost it.
+lever on length.
 
 ### Scoring: merit first, then the budget demotes
 
@@ -333,6 +322,6 @@ the Impact ledger only on an explicit yes.
 
 Keep the weekly small or it dies. Touch these only when he asks:
 
-- **People** — monthly pass, or after meeting someone new
+- **People** — monthly pass, or after meeting someone new; read `references/people.md`
 - **Goals** — quarterly
 - **Impact ledger** — event-driven, per step 9, not a weekly sweep

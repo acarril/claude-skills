@@ -158,3 +158,8 @@ Nothing else — no offers, no follow-up questions.
 - `mcp__claude_ai_Google_Calendar__list_events`
 - `mcp__claude_ai_Google_Drive__search_files`
 - `mcp__claude_ai_Google_Drive__read_file_content`
+
+If a connector is unavailable (not connected, or only its `authenticate` tool is exposed), say which one and keep going without it:
+
+- **No Calendar:** skip the Step 2 lookup; ask for the meeting title and date with a picker (candidates from any topic or date hint in the request), and take attendees from the transcript's speaker labels.
+- **No Drive:** skip Step 3 and the Drive reads; ask for the transcript as a local file path (a `.txt`/`.docx` export of the Gemini notes doc) or pasted text, then distill it the same way.

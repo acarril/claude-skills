@@ -69,12 +69,13 @@ ls <dir>/projects/<name>/notes/*.md          # fury_bids clones
 ls buyer-panel*/notes/*.md                   # buyer-panel
 ```
 
-Notes are named `YYYY-MM-DD_topic.md`; filter on the filename date, then read the ones in
-the window.
+Notes are named `YYYY-MM-DD_topic.md`. Committed notes can be filtered on the filename date;
+untracked notes cannot — the filename is the meeting date, not the writing date (see
+`signals.md` §3).
 
 ## Sanity check
 
-If a project shows commits but is `dormant` or `closed` in Notion, or shows none but is
+If a project shows commits but is `paused` or `closed` in Notion, or shows none but is
 `active`, surface it. That mismatch is the DB being wrong, and it is worth a line in the
 diff rather than silent correction.
 

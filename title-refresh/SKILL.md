@@ -134,12 +134,3 @@ Non-obvious mechanics. Get these wrong and it fails silently:
 ## Common mistakes
 
 - **Composing the title yourself** instead of dispatching. The subagent is the skill.
-- **Editing the existing title line** instead of appending -> ignored by Claude Code.
-- **Finding the dir with `ls`/guessing** instead of deriving it from `$PWD` -> wrong session
-  when many project dirs exist.
-- **Picking the file with `ls -t | head -1`** instead of `$CLAUDE_CODE_SESSION_ID` -> silently
-  retitles a *different* session in the same project whenever two logs share an mtime. This is
-  the one failure that is invisible from inside the subagent, because the title it writes looks
-  correct for the file it read. Resolve by id, verify, or stop.
-- **Writing `ai-title` while a `custom-title` exists** -> invisible. Do the mask check.
-- **Hand-building the JSON** with a title containing quotes/colons -> malformed line.

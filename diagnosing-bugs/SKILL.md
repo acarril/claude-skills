@@ -17,7 +17,7 @@ This skill has you show commands, outputs and captured artifacts. **Redact every
 
 **This is the skill.** Everything else is mechanical. If you have a **tight** pass/fail signal for the bug (one that goes red on _this_ bug), you will find the cause; bisection, hypothesis-testing, and instrumentation all just consume it. If you don't have one, no amount of staring at code or SQL will save you.
 
-Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give up.**
+Spend disproportionate effort here.
 
 ### Ways to construct one, in roughly this order
 
@@ -31,8 +31,6 @@ Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give
 8. **Bisection harness**: if the bug appeared between two known states (commit, snapshot date, config), automate "check state X" so you can `git bisect run` it, or bisect over partition dates the same way.
 9. **Property / seed loop.** If the output is "sometimes wrong", run it across many seeds, dates, or samples and count failures.
 10. **Replay a captured artifact.** Save the actual bad extract, payload, or log to disk; replay it through the code path in isolation.
-
-Build the right feedback loop, and the bug is 90% fixed.
 
 ### Tighten the loop
 

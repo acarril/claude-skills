@@ -23,8 +23,8 @@ on a week of commits.
 
 `Infra` (multi-select: `fda`, `dataflow`, `grid`, `qualtrics`) says **what a row is built
 on** — hence where it breaks and who to call. It is descriptive and it is **not** evidence of
-production. `comparacion-yipit-mlb` carries `fda` and writes only to `meli-sbox`; every one
-of the 15 directories has a `workflows.yml` because they are all clones of the same FDA
+production. `comparacion-yipit-mlb` carries `fda` and writes only to `meli-sbox`; every
+project directory has a `workflows.yml` because they are all clones of the same FDA
 template. Tooling is not production.
 
 `Track infra` is a read-only rollup of the tracks' `Infra` onto the project row — the "does
@@ -75,9 +75,9 @@ From the **edited** update only:
   several, join them; do not summarize them into something vaguer than what he wrote.
 - `Blocked on` ← anything phrased as waiting on a person or team. Name the person. If
   nothing in the update says he is waiting, clear the field rather than leaving a stale one.
-- `Status` ← propose a change only on visible evidence: commits and bullets on a `dormant`
-  row → `active`; nothing for several consecutive weeks on an `active` row → raise it as a
-  question, do not demote silently.
+- `Status` ← propose a change only on visible evidence: commits and bullets on a `paused`
+  or `closed` row → `active`; nothing for several consecutive weeks on an `active` row →
+  raise it as a question, do not demote silently.
 - `Updated` ← the window's end date, on every project that had any activity. A project with
   no activity keeps its old date — that is what makes staleness visible in the views.
 
@@ -95,12 +95,10 @@ of me` is the field that carries the claim; a row without it is an artifact, not
 
 `Attribution` options: `owned`, `co-owned`, `advised`, `method-corrected`, `enabled`.
 
-## Known stale rows, as of 2026-08-20
+## Known stale rows
 
-Fix on the first run:
+Check these whenever the scan touches them; delete a line once it is fixed:
 
-- ~~`fury_ads-incrementality` — repo deleted 2026-08-04.~~ Fixed 2026-08-20: `closed`.
-- ~~`pads-incrementality` — marked `dormant`, has real activity.~~ Fixed 2026-08-20: `active`.
 - `buyer-panel` — `Branch` says `master`; the live clones are on
   `feature/yipit-two-pipeline`, `feature/classifier-197-embed-text`,
   `docs/classifier-implicit-prior`.
@@ -156,7 +154,7 @@ relation or creates its own pair — if the latter, one of them has to go.
 
 `By goal` and the home page board filter on `Tracks IS EMPTY` — leaves only. That shows
 each track under the objective it actually serves, without double-counting its parent.
-`Projects` is the default (leftmost) tab: `Project IS EMPTY`, the 13 top-level rows.
+`Projects` is the default (leftmost) tab: `Project IS EMPTY`, the top-level rows.
 `All Tracks` is `Project IS NOT EMPTY`, grouped by `Project`. `Needs attention` is
 deliberately unfiltered: a blocker matters wherever it sits.
 

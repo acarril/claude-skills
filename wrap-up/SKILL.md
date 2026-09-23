@@ -22,7 +22,7 @@ Done when you can name every candidate action with its exact contents.
 
 ## 2. Arc summary (terminal only)
 
-3-5 short bullets: what we set out to do, what happened, what's left. Nothing persisted. Super short and sweet.
+A few short bullets: what we set out to do, what happened, what's left. Nothing persisted.
 
 ## 3. One checklist
 

@@ -41,3 +41,4 @@ Versioned with git; plugin-ready later by adding `.claude-plugin/plugin.json` if
 | [blast-radius](blast-radius/SKILL.md) | user (`/blast-radius`) | Prove the one fact a change is safe because of, via real queries; lineage-aware risk sweep | cursor/plugins@51a96e0 (pstack), rewritten for data/pipeline lineage |
 | [spinoff](spinoff/SKILL.md) | model | Fork a spinoff topic into an independent Herdr tab (or Agent-tool fork outside Herdr), sized to what it needs | own (designed via grill-me, 2026-08-20) |
 | [ask](ask/SKILL.md) | user (`/ask`) | Re-ask the last message's dangling decisions ("say the word", parked approvals) as pickers | own (designed 2026-08-24) |
+| [memex-search](memex-search/SKILL.md) | model | Search prior Claude/Codex session history with `memex` | bundled with nicosuave/memex; do not edit, refresh with `memex skill update` after `brew upgrade memex` |

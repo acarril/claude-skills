@@ -118,10 +118,9 @@ His own update from 2026-08. Match these *sentences*.
 buyer-panel
 
 Nueva señal para análisis: método de pago normalizado + cuotas, ventana de promesa de entrega, y feed suplementario de delivery de Amazon
-En preparación a mayor escrutinio de la predicción de verticales, construí un eval harness para el clasificador de verticales (golden set + juez LLM + spot-check humano ciego): ahora podemos medir precisión y calibración antes y después de cualquier cambio al clasificador
 agradecido por sus aportes en la Clasificadora!
 
-Flags y bugs: el scanner de calidad ya corre diario, tiene 250+ checks. Corregí ~135k órdenes de Amazon con emails traspuestos (fix durable en ingesta) + desambiguación de precios/totales en cero (cero real vs dato faltante)
+Flags y bugs: el scanner de calidad ya corre diario, tiene 250+ checks.
 
 
 fvf-elasticity
@@ -206,6 +205,8 @@ holds plus what the team never sees.
 **Unverified ops:** <anything a downed tool or MCP server left unchecked>
 
 **Cut this cycle:** <one line per bullet he cut, with the reason — a record, not a re-offer>
+
+**Talking points:** <per posted bullet, in post order: the mechanism and the numbers the length rule kept out, 2-4 lines each>
 
 **Worth a look:** <projects that ran long, silent active projects>
 ```
