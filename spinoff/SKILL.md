@@ -11,7 +11,7 @@ A conversation on topic A produces a genuine spinoff, topic B: worth its own thr
 
 The **payload** is everything B is told at launch. Size it to how self-contained B is:
 
-- **Prompt only.** B is a fully-specified, bounded ask ("fix the null handling in the shipments step and open a PR"). A short prompt is the whole payload. Bounded does not mean read-only — most spinoffs edit code, which is why step 3 exists.
+- **Prompt only.** B is a fully-specified, bounded ask ("fix the null handling in the shipments step and open a PR"). A short prompt is the whole payload. Bounded does not mean read-only — most spinoffs edit code; step 3 decides where.
 - **Prompt + throwaway handoff doc.** B needs background A holds but isn't fully bounded yet. Call the Skill tool with "handoff" for the doc, then reference it from the prompt.
 - **Full handoff.** B is substantial enough that the `/handoff` doc is the payload's primary artifact, not a side reference.
 
@@ -21,14 +21,16 @@ State your recommended size and a one-line gist of the payload.
 
 A single AskUserQuestion call: the recommended size first, the payload's gist, and the other sizes as options. Approving fires steps 3 and 4 immediately. This is the only interruption in the flow.
 
-## 3. Give B its own tree
+## 3. Decide where B works
 
-B writes. A spinoff usually creates a branch, commits, and opens a PR, so B cannot share A's directory: one directory has one HEAD and one index. B's `git checkout -b` moves A onto B's branch, and B's `git add` stages A's uncommitted edits into B's commit. No instruction to B makes that safe. So B gets its own git worktree by default.
+Resolve A's cwd first. In Herdr that is `herdr pane get <parent pane>` — the same call returns the `display_agent` step 4 needs, so make it once and keep both values. Otherwise use `pwd`. If `git -C <cwd> rev-parse --show-toplevel` fails, A is not in a repo: hand B A's cwd and skip the rest of this section.
 
-Resolve A's cwd first. In Herdr that is `herdr pane get <parent pane>` — the same call returns the `display_agent` step 4 needs, so make it once and keep both values. Otherwise use `pwd`. Then:
+**Default: B shares A's cwd and A's branch.** One directory has one HEAD and one index, so B must never switch branches there, and commits only the paths it changed (`git add <paths>`, never `git add -A` / `git commit -a`, which would sweep in A's uncommitted edits). Put both rules in the payload.
 
-1. `git -C <cwd> rev-parse --show-toplevel`. If it fails, A is not in a repo — skip the rest of this section and hand B A's cwd unchanged. `~/.claude` is the common case. Use this **repo root**, not the raw cwd, for the path in the next step: A may have `cd`ed into a subdirectory, and `<subdir>-wt-<slug>` would drop a second checkout of the whole repo inside A's own tree, where it shows up as untracked junk in A's status.
-2. `git -C <root> worktree add <root>-wt-<slug> -b <slug>`, where `<slug>` is a short kebab-case tag for B's topic. This branches from A's current HEAD, which is what "carry only the context B needs" means for git. B renames or rebases the branch itself if its task needs a different base.
+**Worktree when B's work is destructive or conflicting**: B needs its own branch or PR separate from A's, rewrites history, or edits files A is also changing. A new branch in A's directory would move A onto it too, so B gets a worktree instead. Say which mode you chose in step 2's gist.
+
+1. Use the **repo root** from `rev-parse --show-toplevel`, not the raw cwd — A may have `cd`ed into a subdirectory.
+2. `git -C <root> worktree add <root>/.worktrees/<slug> -b <slug>`, where `<slug>` is a short kebab-case tag for B's topic. Then make sure `.worktrees/` is in `$(git -C <root> rev-parse --git-common-dir)/info/exclude` (append it if absent): a local-only ignore, so the worktree never shows in A's `git status` and is never committed. This branches from A's current HEAD; B renames or rebases the branch itself if its task needs a different base.
 3. Link the untracked files B needs, because a worktree receives only tracked files. Read the real list before you link — it differs per repo, and a guessed name creates a dead symlink:
 
    ```
@@ -56,7 +58,7 @@ Check `HERDR_ENV`:
   4. `herdr agent start <name> --kind claude --pane <new pane> -- --model <the model from step 2>`. Native agent args go after `--`. `<name>` is a **handle** for the commands below, not a display label — keep it short and mechanical, and do not try to make it descriptive.
   5. Mask that handle: `herdr pane report-metadata <new pane> --source local:model-label --display-agent <the parent's display_agent from step 1>`. The sidebar's `agent` token resolves display_agent > name > kind, and `herdr-model-label.sh` only writes on Stop, so without this the handle is what shows until B finishes its first turn. B runs the parent's model, so the parent's label is the correct value, and the hook overwrites it with a freshly-read one later. Skip if step 1 found no `display_agent`.
   6. `herdr agent prompt <name> "<the payload>"`, without `--wait`.
-- **Not in Herdr**: fall back to the Agent tool, `subagent_type: "fork"`, with the same payload, plus `isolation: "worktree"` whenever step 3 found a repo. It runs in-process rather than in a tab, and always inherits A's model, so steps 1–2 do not apply. The fork creates and cleans up its own worktree, so step 3's `worktree add` is redundant here — skip it, and put step 3's linking instructions in the payload for B to run against A's cwd.
+- **Not in Herdr**: fall back to the Agent tool, `subagent_type: "fork"`, with the same payload, plus `isolation: "worktree"` when step 3 chose a worktree. It runs in-process rather than in a tab, and always inherits A's model, so steps 1–2 do not apply. The fork creates and cleans up its own worktree, so step 3's `worktree add` is redundant here — skip it, and put step 3's linking instructions in the payload for B to run against A's cwd.
 
 ## 5. Report and continue
 
