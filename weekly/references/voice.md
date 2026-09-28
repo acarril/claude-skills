@@ -40,10 +40,28 @@ said his post was too verbose; measured against the two posts beside it that mor
 | **his post** | 14 | 626 | 38 | 118 | 3.7 |
 | **Daniel** | 14 | 288 | 17 | 53 | 0.1 |
 | **Kevin** | 13 | 287 | 23 | 43 | 0.7 |
+| **his post, 2026-09-28** (his own edit of the draft) | 15 | ~390 | 23 | 40 | — |
 
-**Target: Kevin's shape.** ~300 words, 12–15 bullets, median ~20 words per bullet, hard cap 40,
-at most one number per bullet. He carries more projects than anyone else on the team, so his
-length comes from project *count*; per-bullet depth is what has to give.
+**Target: his 2026-09-28 shape.** ~300–400 words, 12–15 bullets, median ~25 words per bullet,
+hard cap 45, at most one number per bullet. He carries more projects than anyone else on the
+team, so his length comes from project *count*; per-bullet depth is what has to give — but not
+the few words of context that let someone who missed last week follow the bullet.
+
+## His edits — what he changes in a draft
+
+From the 2026-09-28 draft to what he posted. These are the rules in `SKILL.md` step 3 applied;
+match the right-hand column.
+
+| Draft | Posted |
+|---|---|
+| `el score publicado infla 3–5× el efecto de adopción (MLB). El ranking sirve; los niveles no sirven para ROI…` | `Anclé el score publicado a una ventana pre-tratamiento más larga para suavizar shocks de peaks; esto baja 1-2x el efecto de PAds (MLB). El ranking sirve, pero los niveles son más moderados. Este score nuevo ya está en prod.` — his framing, not the issue's |
+| `descongelé pp_drivers (congelado desde julio); la causa era la forma del join.` | `actualicé pp_drivers (Tiger, congelado desde julio), y armé un flujo en Dataflow para actualizarlo más regularmente.` — outcome for the reader, not the root cause |
+| `la brecha entre sitios se achica y la inversión de género se mantiene.` | `nosotros somos más representativos en NSE, edad y actividad en site, la brecha entre sitios se achica. Pero seguimos al revés en género.` — says what "inversión" means |
+| `Se cerraron las vías observacionales a la dosis. La única ruta es un experimento…` | `Trabajo en modelo por dosis para aprovechar experimentos de presupuesto de campañas, que le tengo que pedir a Ariel.` — work in progress stated as such |
+| `*Brasil*: la caída de PP…` | `Brasil y cambio metodológico: la caída de PP…` — label says what the question was |
+
+He also cut every `Next:` but one, the Black Friday reprioritisation, and another team's
+simulation error.
 
 How the others read, for register:
 

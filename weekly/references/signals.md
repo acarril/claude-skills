@@ -48,18 +48,30 @@ reuniones de PP del 05 al 14/08" is the honest line, and it is real work.
 O3 fail silently. Use `memex`, not a glob over `~/.claude/projects/`: the glob is Claude-only,
 and Codex holds more than half of these sessions.
 
-Run `memex index` once at the start of the scan (~5s, incremental). `memex sessions` does
-**not** auto-index, so without this the last few days are missing.
+A continuous memex daemon (launchd, since 2026-09-28) keeps the index current. Check it first
+with `memex daemon status`; only if it reads `stopped`, run `memex index` once. `memex sessions`
+does **not** auto-index, so a stopped daemon means the last few days are missing.
 
 ### Discovery — one call covers every project
 
 ```bash
-memex sessions --since <window start> --limit 500 --json-array
+memex sessions --since <window start> --origin interactive --limit 500 --format json
 ```
+
+`--origin interactive` drops subagent and fork sessions, whose "user" turns are prompts written
+by the parent agent, not by him (2026-09-19 window: 90 sessions → 52). Codex sessions he drove
+stay in.
 
 Each row carries `session_id`, `source`, `source_path`, `cwd`, `git_root`, `started_at`,
 `last_at`, `message_count`. **Group by `git_root`** — its basename is the directory key in
 `topology.md`; memex resolves both the repo root and `projects/<name>` to the same git root.
+Two roots need mapping, and the script below does both:
+
+- **`~/Meli` itself** is where advisory work happens: questions from teammates and other teams,
+  answered from a session opened at the root. Key it `Meli (advisory)` and assign each message to
+  a project, or to the *Otros* line, by its content. Dropping it is how O3 goes blind.
+- **Worktrees** — `pads-incrementality-wt-top-tail-rethink`, `<repo>/.claude/worktrees/agent-*`
+  — belong to the canonical key they start with.
 
 Scope to one repo with `--cwd ~/Meli/<dir>`. It matches by path component, so
 `--cwd ~/Meli/buyer-panel` does **not** pull in `buyer-panel-197` or `buyer-panel-deck` —
@@ -80,44 +92,64 @@ His own messages are short, carry the intent, and are cheap to read; the assista
 enormous and mostly redundant. Filter by entry timestamp, never file mtime — a session can
 span weeks.
 
-`memex session` pages at **500 records** and sessions here reach several thousand. Paginate
-with `--offset` or you silently truncate the biggest projects: measured on the 2026-08-18
-window, skipping pagination lost 102 of 367 Claude messages, all from the longest sessions,
-with no error.
+`memex session` pages at **at most 500 records**, and sessions here reach several thousand.
+Paginate or you silently truncate the biggest projects: measured on the 2026-08-18 window,
+skipping pagination lost 102 of 367 Claude messages, all from the longest sessions, with no
+error.
+
+**Follow `next_offset`, never count lines.** Pages are also capped by a character budget, so a
+page can hold far fewer records than `--limit` and still not be the last. Every page ends with a
+`type: "page"` record carrying `total` and `next_offset`; loop until `next_offset` is null. On
+the 2026-09-25 run, a loop that stopped on a short page got 7 of 402 records from one pads
+session and 64 of 389 in-window user messages overall.
 
 ```python
 import json, subprocess, datetime
 START = '<window start>'
 SKIP = ('<local-command', '<command-name', '<command-message', '[Request interrupted',
         'Base directory', '<system-reminder', '<task-notification',
-        '# AGENTS.md instructions')
+        '# AGENTS.md instructions', '[SYSTEM NOTIFICATION', '<bash-stdout',
+        'Another Claude session sent', 'The coordinator sent', '<fork-boilerplate',
+        'Refresh the title')
 PAGE = 500
+MAX_CHARS = 400000  # default 16k budget: 39 calls / 10s on the biggest session; this: 4 / 1s
+MELI = '/Users/acarril/Meli'
+KEYS = sorted((l.split('|')[1].strip(' `') for l in open(
+    '/Users/acarril/.claude/skills/weekly/references/topology.md')
+    if l.startswith('| `') and '|' in l[3:]), key=len, reverse=True)
+
+def project(root):
+    if root == MELI: return 'Meli (advisory)'
+    base = root[len(MELI) + 1:].split('/', 1)[0]
+    return next((k for k in KEYS if base == k or base.startswith(k + '-')), base)
 
 def day(ms):
     return datetime.datetime.fromtimestamp(ms / 1000, datetime.UTC).strftime('%Y-%m-%d')
 
 def records(session_id, source_path):
     off = 0
-    while True:
+    while off is not None:
         out = subprocess.run(
             ['memex', 'session', session_id, '--source-path', source_path,
-             '--offset', str(off), '--limit', str(PAGE)],
+             '--offset', str(off), '--limit', str(PAGE), '--max-chars', str(MAX_CHARS)],
             capture_output=True, text=True).stdout.splitlines()
+        off = None
         for line in out:
-            try: yield json.loads(line)['record']
-            except Exception: pass
-        if len(out) < PAGE: return
-        off += PAGE
+            try: d = json.loads(line)
+            except Exception: continue
+            if d.get('type') == 'page': off = d.get('next_offset')
+            elif 'record' in d: yield d['record']
 
 rows = json.loads(subprocess.run(
-    ['memex', 'sessions', '--since', START, '--limit', '500', '--json-array'],
+    ['memex', 'sessions', '--since', START, '--origin', 'interactive', '--limit', '500',
+     '--format', 'json'],
     capture_output=True, text=True).stdout)
 
 seen = set()
 for r in rows:
-    root = r.get('git_root') or ''
-    if not root.startswith('/Users/acarril/Meli/'): continue
-    proj = root.rsplit('/', 1)[-1]
+    root = (r.get('git_root') or r.get('cwd') or '').rstrip('/')
+    if root != MELI and not root.startswith(MELI + '/'): continue
+    proj = project(root)
     for rec in records(r['session_id'], r['source_path']):
         if rec.get('role') != 'user': continue
         if day(rec['ts']) < START: continue

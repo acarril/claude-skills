@@ -95,6 +95,13 @@ Also read last cycle's `~/Meli/weekly/*.md`, specifically its `Next:` lines.
 
 A project is quiet only when all four sources are quiet.
 
+**Freshness check before drafting.** Notes, `TODO.md`, `STATUS.md` and issues lag behind
+conversations. For every candidate `Esperando:` and every bullet stating a design or plan,
+read the newest in-window session messages and his Slack messages on that project; if they
+contradict the artifact, the newer source wins. On 2026-09-25 the draft said `Esperando: Chita
+desde el 17/09` and "20k sellers de piso" four days after Chita had rejected the design in a
+session the scan never read.
+
 ## Step 3 — Draft, in Spanish, over-inclusive and scored
 
 Read `references/voice.md` first: it carries who reads this, the register they read it in, and
@@ -113,8 +120,14 @@ below rewards numbers, which inflates bullets. The team's measured norm is in
 `references/voice.md` → Calibration. Apply these to every candidate **as it is drafted**, not
 after the cuts:
 
-- **~20 words per bullet, hard cap 40.** One sentence of state; optionally one of consequence
-  or `Next:`. A bullet over 40 words is two bullets or one bullet plus a talking point.
+- **~30 words per bullet, hard cap 45.** One sentence of state; optionally one of consequence
+  or `Next:`. A bullet over 45 words is two bullets or one bullet plus a talking point. The
+  total stays ~300–400 words; the extra room per bullet is for the context gloss below, not
+  for more numbers.
+- **Gloss what a reader who missed last week would not know.** The first mention of a tool,
+  track or experiment in a cycle carries a 3–6 word gloss: `Astro (nuevo ranker de search)`,
+  `pp_drivers (Tiger, congelado desde julio)`. A bullet only an insider can parse has failed,
+  however short it is.
 - **At most one number per bullet.** Pick the one that changes what the reader does. The rest
   go to the talking points in the 🔒 half (step 5).
 - **No mechanism in the post.** No "porque", no "no es un bug:", no parenthetical method, no
@@ -132,9 +145,27 @@ Before and after, the same bullet:
 Everything the long version knew still exists: in the prereg, in the notes, and in the
 talking points. The post is not where it lives.
 
-### The test: a bullet earns its place when it is a result AND it is consequential
+### Framing: his words, not the artifact's
 
-- **Result, not activity.** State what is now true, never what he spent time on.
+Most of what the scan reads was written by agents — issues, `STATUS.md`, commit messages,
+changelogs — in analytical shorthand. **Never lift a finding's framing from those.** Restate it
+the way he would say it to the team: what changed, in which direction, and what it means for
+the reader. Where the artifact and his own session messages describe the same result, his
+messages win.
+
+The failure this rule exists for, from 2026-09-28: the roadmap issue said the old score was
+"3–5× the within-item estimate", and the draft posted that as `el score publicado infla 3–5×
+el efecto de adopción`. He rewrote it as `Anclé el score publicado a una ventana pre-tratamiento
+más larga para suavizar shocks de peaks; esto baja 1-2x el efecto de PAds (MLB)` — what he did,
+what it does to the number, and that it is in prod. A wrong framing is worse than a missing
+bullet: he may not catch it, and it goes up to the CEO.
+
+### The test: a bullet earns its place when it states where things are AND it is consequential
+
+- **State, not effort.** Say what is now true, or — for work still underway — say so plainly:
+  `Trabajo en modelo por dosis para aprovechar experimentos de presupuesto` is his own phrasing
+  and is fine. Never recast work in progress as a result ("se cerraron las vías…"), and never
+  report hours spent.
 - **Consequential.** Nacho would act differently, or a teammate would ask about it, or someone
   is worse off not knowing. "What happened?" is the prompt; consequential is the gate.
 
@@ -147,7 +178,8 @@ What the test decides in the cases that recur:
 | **Numbers** | **One per bullet**, the one that moved a decision: `106k discrepancias (19%)` is one number, `50k sin CUPED le gana a 20k` is one comparison. The second and third numbers go to the talking points. Precision that only decorates goes — `0.0000000000pp`, `558.741` where `558k` reads the same. |
 | **Mechanism, method** | **Never in the bullet.** It goes to the talking points, or the link carries it. The bullet states the result the mechanism produced; if the mechanism itself was the decision this cycle ("no es un bug, es el anchor"), the bullet says the decision, not the argument. |
 | **Internal workings, bug fixes** | Report the impact on the result, not the repair: "los ítems que se caían del scoring vuelven a entrar" over "saqué `pre_seller_latest_cartera` del feature set". A fix with no effect on a result scores low. |
-| **Politics, deferrals, skepticism** | **High.** A deprioritisation, a stalled dependency, a leader's doubt — this is what Nacho most needs and what he will not learn elsewhere. |
+| **Stalled dependencies, asks to other teams** | **High.** Who is blocking, since when, what was asked — this is what Nacho most needs and will not learn elsewhere. |
+| **Sensitive: another team's error, an internal reprioritisation, doubt about a named person** | **`BORDERLINE (sensitive)`**, never `IN`. The information matters, but a team channel is often not where he wants to say it; he cut all three kinds on 2026-09-28. Keep the fact in the talking points either way. |
 
 **Links are the compression lever.** A bullet whose artifact exists — Grid doc, dashboard,
 deck, published table — carries the link and then states only the outcome. Depth becomes
@@ -172,8 +204,10 @@ two marks rather than a filter.
 - **Most-moved first.** The top of the list gets the Monday discussion; the tail may not be
   reached.
 - **Track sub-labels** where a project runs parallel pipelines (`*Cupones*`, `*Panel piloto*`).
-- **Every project that moved carries a `Next:`.** Where it is stalled, `Esperando:` names the
-  person and the date it has been waiting since. A `Next:` names something already committed.
+- **`Next:` only where a commitment is on record** — a `- [ ]` in a dated note, a `TODO.md`
+  item he said he is doing now, or a date he gave someone. Never invent one to fill the slot; on
+  2026-09-28 he deleted three of the four proposed. Where a project is stalled, `Esperando:`
+  names the person and the date it has been waiting since.
 - **A project where nothing scored** gets one line under `*Sin updates:*` and no `Next:`.
 - **A track that moved last cycle and not this one** keeps its label with a status tag and
   nothing else: `• *Cupones*: igual a semana pasada` / `Sin avances`. That is how Kevin and
@@ -252,11 +286,11 @@ and Monday morning is the wrong moment to discover that it was not.
 Then print the shape line and check it against the target before showing him anything:
 
 ```bash
-wc -w ~/Meli/weekly/YYYY-MM-DD.slack.txt      # target ~300; over 400 is the 2026-09-07 failure
+wc -w ~/Meli/weekly/YYYY-MM-DD.slack.txt      # target ~300–400; over 450 is the 2026-09-07 failure
 ```
 
 Also print bullets, median words per bullet and the longest bullet. If the median is above
-25 or any bullet is above 40, fix the draft before he sees it; do not ship the number and
+30 or any bullet is above 45, fix the draft before he sees it; do not ship the number and
 call it out.
 
 Show him the post and stop.
