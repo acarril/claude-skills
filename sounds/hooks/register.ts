@@ -9,7 +9,8 @@ const isOff = async ($: EngineInterface) =>
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({ name: 'sounds', description: 'Toggle notification sounds (or: /sounds on|off)' })
-    $.ui.status((await isOff($)) ? 'sounds off' : undefined)
+    // Clears the status row an earlier version set; the marker now lives in statusline-command.sh.
+    $.ui.status(undefined)
 
     return next(e)
   })
@@ -19,7 +20,6 @@ export const register: Register = on => {
     if (arg !== '' && arg !== 'on' && arg !== 'off') return { text: 'Usage: /sounds [on|off]' }
     const off = arg === '' ? !(await isOff($)) : arg === 'off'
     await $.fs.write(FLAG, off ? 'off\n' : 'on\n')
-    $.ui.status(off ? 'sounds off' : undefined)
 
     return { text: off ? 'Sounds off.' : 'Sounds on.' }
   })
